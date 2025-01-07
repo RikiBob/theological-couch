@@ -1,7 +1,7 @@
 import {
   Column,
   CreateDateColumn,
-  Entity,
+  Entity, JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn
@@ -13,13 +13,13 @@ export class QuestionEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({length: 255})
+  @Column({length: 255, nullable: true})
   email: string
 
   @Column({length: 2000})
   question_text: string
 
-  @Column({length: 100})
+  @Column({length: 100, nullable: true})
   url_response: string
 
   @CreateDateColumn()
@@ -28,6 +28,12 @@ export class QuestionEntity {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @ManyToOne(() => EditionEntity, (edition) => edition.questions)
+  @Column({nullable: true})
+  edition_id: number;
+
+  @ManyToOne(
+    () => EditionEntity,
+    (edition) => edition.questions, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "edition_id" })
   edition: EditionEntity
 }

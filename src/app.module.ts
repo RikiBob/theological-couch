@@ -6,6 +6,8 @@ import { AdminEntity } from "./entities/admin.entity";
 import { EditionEntity } from "./entities/edition.entity";
 import { QuestionEntity } from "./entities/question.entity";
 import { AuthModule } from './auth/auth.module';
+import { AdminModule } from './admin/admin.module';
+import { QuestionModule } from './question/question.module';
 
 dotenv.config();
 
@@ -22,6 +24,8 @@ dotenv.config();
   }),
     TypeOrmModule.forFeature([AdminEntity]),
     AuthModule,
+    AdminModule,
+    QuestionModule,
   ],
   controllers: [],
   providers: [],
