@@ -4,6 +4,10 @@ import { EditionEntity } from "../entities/edition.entity";
 import { Repository } from "typeorm";
 import { CreateEditionDto } from "./dtoes/create-edition.dto";
 import { QuestionEntity } from "../entities/question.entity";
+import { EmailService } from "../email/email.service";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 @Injectable()
 export class AdminService {
@@ -11,7 +15,8 @@ export class AdminService {
     @InjectRepository(EditionEntity)
     private readonly editionRepository: Repository<EditionEntity>,
     @InjectRepository(QuestionEntity)
-    private readonly questionRepository: Repository<QuestionEntity>
+    private readonly questionRepository: Repository<QuestionEntity>,
+    private readonly emailService: EmailService,
   ) {}
 
   async createEdition(data: CreateEditionDto): Promise<EditionEntity> {
@@ -44,6 +49,15 @@ export class AdminService {
     await this.questionRepository.update(
       {id: questionId},
       {url_response: url, edition_id: edition.id});
+
+    const mailOptions = {
+      to: question.email,
+      subject: 'Відповідь на питання',
+      text: url,
+    }
+
+    await this.emailService.sendEmail(mailOptions);
+
     return edition;
   }
 }
