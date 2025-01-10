@@ -8,7 +8,6 @@ import { QuestionEntity } from "./entities/question.entity";
 import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
 import { QuestionModule } from './question/question.module';
-import { EmailModule } from './email/email.module';
 
 dotenv.config();
 
@@ -27,7 +26,7 @@ dotenv.config();
     AuthModule,
     AdminModule,
     QuestionModule,
-    EmailModule,
+
   ],
   controllers: [],
   providers: [],

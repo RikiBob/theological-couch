@@ -4,11 +4,12 @@ import * as dotenv from 'dotenv';
 import { SendEmailDto } from "./dtoes/send-email.dto";
 import { EmailResponseDto } from "./dtoes/email-response.dto";
 import { Transporter } from 'nodemailer';
+import { IEmailService } from "./email.interface";
 
 dotenv.config();
 
 @Injectable()
-export class EmailService {
+export class EmailService implements IEmailService {
   private transporter: Transporter;
 
   constructor() {
