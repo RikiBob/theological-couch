@@ -64,10 +64,14 @@ export class AdminService {
       {id: questionId},
       {url_response: url, edition_id: edition.id});
 
+    const replacements = {
+      video_url: url,
+      question_text: question.question_text,
+    };
     const mailOptions = {
       to: question.email,
-      subject: 'Відповідь на питання',
-      text: url,
+      subject: 'Answer to Your Question',
+      replacements,
     }
 
     return await this.emailService.sendEmail(mailOptions);

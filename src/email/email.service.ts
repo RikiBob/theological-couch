@@ -5,6 +5,8 @@ import { SendEmailDto } from "./dtoes/send-email.dto";
 import { EmailResponseDto } from "./dtoes/email-response.dto";
 import { Transporter } from 'nodemailer';
 import { IEmailService } from "./email.interface";
+import { promises as fs } from 'fs';
+import * as path from 'path';
 
 dotenv.config();
 
@@ -24,8 +26,25 @@ export class EmailService implements IEmailService {
     });
   }
 
-  async sendEmail({ to, subject, text, html }: SendEmailDto): Promise<EmailResponseDto> {
+  private async loadTemplate(filePath: string, replacements: { [key: string]: string }): Promise<string> {
     try {
+      const fullPath = path.join(process.cwd(), 'src', 'email', 'templates', filePath);
+      let template = await fs.readFile(fullPath, 'utf8');
+
+      for (const key in replacements) {
+        const regex = new RegExp(`{{${key}}}`, 'g'); // Замінюємо всі {{ключ}}
+        template = template.replace(regex, replacements[key]);
+      }
+      return template;
+    } catch (error) {
+      console.error('Error loading email template:', error);
+      throw new InternalServerErrorException('Failed to load email template.');
+    }
+  }
+
+  async sendEmail({ to, subject, text, replacements }: SendEmailDto): Promise<EmailResponseDto> {
+    try {
+      const html = await this.loadTemplate('email-template.html', replacements);
       const mailOptions = {
         from: process.env.GMAIL_USER,
         to,

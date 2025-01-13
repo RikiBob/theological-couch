@@ -16,6 +16,7 @@ export class AdminController {
     return await this.adminService.createEdition(data);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch('question/:id')
   async createResponse(
     @Body() data: CreateResponseDto,

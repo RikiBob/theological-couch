@@ -1,8 +1,9 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { QuestionEntity } from "../entities/question.entity";
-import { Repository } from "typeorm";
-import { CreateQuestionDto } from "./dtoes/create-question";
+import { Repository, SelectQueryBuilder } from "typeorm";
+import { CreateQuestionDto } from "./dtoes/create-question.dto";
+import { GetQuestionsDto } from "./dtoes/get-questions.dto";
 
 @Injectable()
 export class QuestionService {
@@ -12,11 +13,52 @@ export class QuestionService {
   ) {}
 
   async createQuestion(data: CreateQuestionDto): Promise<QuestionEntity> {
-    if(!data.question_text) {
+    if (!data.question_text) {
       throw new BadRequestException('The question text field is empty')
     }
+    try {
+      const question = this.questionRepository.create(data);
+      return await this.questionRepository.save(question);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
 
-    const question = this.questionRepository.create(data);
-    return await this.questionRepository.save(question);
+  private async getQuestionsWithFilter(
+    data: GetQuestionsDto,
+    filter?: (queryBuilder: SelectQueryBuilder<QuestionEntity>) => void
+  ): Promise<QuestionEntity[]> {
+    try {
+      const pageNumber = +data.page || 1;
+      const sortField = data.sortBy || 'created_at';
+      const sortDirection = data.sortOrder || 'DESC';
+      const take = 25;
+      const skip = (pageNumber - 1) * take;
+
+      const queryBuilder = this.questionRepository
+        .createQueryBuilder('question')
+        .orderBy(`question.${sortField}`, sortDirection)
+        .skip(skip)
+        .take(take);
+
+      if (filter) {
+        filter(queryBuilder);
+      }
+
+      const [questions] = await queryBuilder.getManyAndCount();
+      return questions;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async getQuestions(data: GetQuestionsDto): Promise<QuestionEntity[]> {
+    return this.getQuestionsWithFilter(data);
+  }
+
+  async getUnansweredQuestions(data: GetQuestionsDto): Promise<QuestionEntity[]> {
+    return this.getQuestionsWithFilter(data, (queryBuilder) => {
+      queryBuilder.where('question.url_response IS NULL');
+    });
   }
 }
