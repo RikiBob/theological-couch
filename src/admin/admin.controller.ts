@@ -1,8 +1,7 @@
-import { Body, Controller, HttpStatus, Param, Patch, Post, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, HttpStatus, Param, Patch, Post, Res, UseGuards } from "@nestjs/common";
 import { AdminService } from './admin.service';
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
 import { CreateEditionDto } from "./dtoes/create-edition.dto";
-import { EditionEntity } from "../entities/edition.entity";
 import { CreateResponseDto } from "./dtoes/create-response.dto";
 import { Response } from "express";
 
@@ -12,8 +11,9 @@ export class AdminController {
 
   @UseGuards(JwtAuthGuard)
   @Post('edition')
-  async createEdition(@Body() data: CreateEditionDto): Promise<EditionEntity> {
-    return await this.adminService.createEdition(data);
+  async createEdition(@Body() data: CreateEditionDto,  @Res() res: Response): Promise<Response> {
+    await this.adminService.createEdition(data);
+    return res.sendStatus(HttpStatus.OK);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -23,6 +23,13 @@ export class AdminController {
     @Param('id') id: string,
     @Res() res: Response): Promise<Response> {
     await this.adminService.createResponse(data.url, +id);
+    return res.sendStatus(HttpStatus.OK);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('edition/:id')
+  async deleteEdition(@Param('id') id: string, @Res() res: Response): Promise<Response> {
+    await this.adminService.deleteEdition(id);
     return res.sendStatus(HttpStatus.OK);
   }
 }

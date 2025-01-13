@@ -32,12 +32,11 @@ export class EmailService implements IEmailService {
       let template = await fs.readFile(fullPath, 'utf8');
 
       for (const key in replacements) {
-        const regex = new RegExp(`{{${key}}}`, 'g'); // Замінюємо всі {{ключ}}
+        const regex = new RegExp(`{{${key}}}`, 'g');
         template = template.replace(regex, replacements[key]);
       }
       return template;
     } catch (error) {
-      console.error('Error loading email template:', error);
       throw new InternalServerErrorException('Failed to load email template.');
     }
   }
@@ -54,13 +53,11 @@ export class EmailService implements IEmailService {
       };
 
       const info = await this.transporter.sendMail(mailOptions);
-      console.log('Email sent: ', info.response);
       return {
         messageId: info.messageId,
         response: info.response,
       };
     } catch (error) {
-      console.error('Error sending email: ', error);
       throw new InternalServerErrorException('Failed to send email. Please try again later.');
     }
   }

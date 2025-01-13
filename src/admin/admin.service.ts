@@ -27,8 +27,12 @@ export class AdminService {
       throw new BadRequestException('The name or url field is empty');
     }
 
-    const edition = this.editionRepository.create(data);
-    return await this.editionRepository.save(edition);
+    try {
+      const edition = this.editionRepository.create(data);
+      return await this.editionRepository.save(edition);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
   private async checkQuestionById(id: number): Promise<QuestionEntity> {
@@ -56,24 +60,47 @@ export class AdminService {
       throw new BadRequestException('URL or question ID missing');
     }
 
-    const question = await this.checkQuestionById(questionId);
-    const parseUrl = url.split('&t=')[0];
-    const edition = await this.checkEditionByUrl(parseUrl);
+    try {
+      const question = await this.checkQuestionById(questionId);
+      const parseUrl = url.split("&t=")[0];
+      const edition = await this.checkEditionByUrl(parseUrl);
 
-    await this.questionRepository.update(
-      {id: questionId},
-      {url_response: url, edition_id: edition.id});
+      await this.questionRepository.update(
+        { id: questionId },
+        { url_response: url, edition_id: edition.id });
 
-    const replacements = {
-      video_url: url,
-      question_text: question.question_text,
-    };
-    const mailOptions = {
-      to: question.email,
-      subject: 'Answer to Your Question',
-      replacements,
+      const replacements = {
+        video_url: url,
+        question_text: question.question_text
+      };
+      const mailOptions = {
+        to: question.email,
+        subject: "Answer to Your Question",
+        replacements
+      };
+
+      return await this.emailService.sendEmail(mailOptions);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  private async checkEditionById(id: number): Promise<EditionEntity> {
+    const question = await this.editionRepository.findOneBy({ id: id });
+
+    if (!question) {
+      throw new BadRequestException('Edition not found.');
     }
 
-    return await this.emailService.sendEmail(mailOptions);
+    return question;
+  }
+
+  async deleteEdition(id: string): Promise<void> {
+    try {
+      const edition = await this.checkEditionById(+id);
+      await this.editionRepository.delete(edition.id);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 }

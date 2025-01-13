@@ -13,7 +13,7 @@ export class AuthController {
     @Body() data: LoginAdminDto,
     @Res() res: Response,
   ): Promise<Response> {
-    const { accessToken, refreshToken } = await this.authService.signIn(data.login, data.password);
+    const { accessToken, refreshToken } = await this.authService.signIn(data);
 
     res.cookie('access_token', accessToken, {
       httpOnly: true,
