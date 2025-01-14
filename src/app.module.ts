@@ -1,4 +1,4 @@
-import { Module, OnModuleInit } from "@nestjs/common";
+import { MiddlewareConsumer, Module, NestModule, OnModuleInit } from "@nestjs/common";
 import { InjectRepository, TypeOrmModule } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import * as dotenv from "dotenv";
@@ -8,6 +8,9 @@ import { QuestionEntity } from "./entities/question.entity";
 import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
 import { QuestionModule } from './question/question.module';
+import { LoggerModule } from './logger/logger.module';
+import { CustomLoggerService } from "./logger/logger.service";
+import { LoggerMiddleware } from "./middlewares/logger.middleware";
 
 dotenv.config();
 
@@ -26,15 +29,17 @@ dotenv.config();
     AuthModule,
     AdminModule,
     QuestionModule,
+    LoggerModule,
 
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule implements OnModuleInit{
+export class AppModule implements OnModuleInit, NestModule {
   constructor(
     @InjectRepository(AdminEntity)
     private readonly adminRepository: Repository<AdminEntity>,
+    private readonly customLoggerService: CustomLoggerService,
   ) {}
 
   //Створюємо екземпляр Admin при ініціалізації модулю
@@ -47,5 +52,10 @@ export class AppModule implements OnModuleInit{
       });
       await this.adminRepository.save(admin);
     }
+  }
+
+  // Реєстрація middleware
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 }
