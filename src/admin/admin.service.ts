@@ -23,10 +23,6 @@ export class AdminService {
   ) {}
 
   async createEdition(data: CreateEditionDto): Promise<EditionEntity> {
-    if(!data.name || !data.url_video) {
-      throw new BadRequestException('The name or url field is empty');
-    }
-
     try {
       const edition = this.editionRepository.create(data);
       return await this.editionRepository.save(edition);
@@ -56,10 +52,6 @@ export class AdminService {
   }
 
   async createResponse(url: string, questionId: number): Promise<EmailResponseDto> {
-    if(!url || !questionId) {
-      throw new BadRequestException('URL or question ID missing');
-    }
-
     try {
       const question = await this.checkQuestionById(questionId);
       const parseUrl = url.split("&t=")[0];
@@ -73,6 +65,7 @@ export class AdminService {
         video_url: url,
         question_text: question.question_text
       };
+
       const mailOptions = {
         to: question.email,
         subject: "Answer to Your Question",
@@ -86,13 +79,13 @@ export class AdminService {
   }
 
   private async checkEditionById(id: number): Promise<EditionEntity> {
-    const question = await this.editionRepository.findOneBy({ id: id });
+    const edition = await this.editionRepository.findOneBy({ id: id });
 
-    if (!question) {
+    if (!edition) {
       throw new BadRequestException('Edition not found.');
     }
 
-    return question;
+    return edition;
   }
 
   async deleteEdition(id: string): Promise<void> {

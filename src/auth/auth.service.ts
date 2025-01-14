@@ -48,21 +48,38 @@ export class AuthService {
     }
   }
 
-  async signIn(data: LoginAdminDto): Promise<{ accessToken: string; refreshToken: string }> {
-    const existingUser = await this.adminRepository.findOneBy({login: data.login});
-    if (!existingUser) {
-      throw new BadRequestException('Invalid email or password');
-    }
+  private async checkAdminExists(login: string): Promise<AdminEntity> {
+      const existingAdmin = await this.adminRepository.findOneBy({login: login});
 
-    const isPasswordValid = await existingUser.comparePassword(data.password);
+      if (!existingAdmin) {
+        throw new BadRequestException('Invalid email');
+      }
+
+      return existingAdmin;
+  }
+
+  private async isPasswordValid(password: string, admin: AdminEntity): Promise<boolean> {
+    const isPasswordValid = await admin.comparePassword(password);
+
     if (!isPasswordValid) {
-      throw new BadRequestException('Invalid email or password');
+      throw new BadRequestException('Invalid password');
     }
 
-    return this.generateJwt({
-      sub: existingUser.id,
-      login: existingUser.login,
-    });
+    return isPasswordValid;
+  }
+
+  async signIn(data: LoginAdminDto): Promise<{ accessToken: string; refreshToken: string }> {
+    try {
+      const existingAdmin = await this.checkAdminExists(data.login);
+      await this.isPasswordValid(data.password, existingAdmin);
+
+      return this.generateJwt({
+        sub: existingAdmin.id,
+        login: existingAdmin.login
+      });
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
   async logout(): Promise<void> {
