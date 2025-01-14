@@ -11,6 +11,7 @@ import { QuestionModule } from './question/question.module';
 import { LoggerModule } from './logger/logger.module';
 import { CustomLoggerService } from "./logger/logger.service";
 import { LoggerMiddleware } from "./middlewares/logger.middleware";
+import { EditionModule } from './edition/edition.module';
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ dotenv.config();
     AdminModule,
     QuestionModule,
     LoggerModule,
+    EditionModule,
 
   ],
   controllers: [],

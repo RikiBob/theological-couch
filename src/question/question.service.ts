@@ -13,9 +13,6 @@ export class QuestionService {
   ) {}
 
   async createQuestion(data: CreateQuestionDto): Promise<QuestionEntity> {
-    if (!data.question_text) {
-      throw new BadRequestException('The question text field is empty')
-    }
     try {
       const question = this.questionRepository.create(data);
       return await this.questionRepository.save(question);

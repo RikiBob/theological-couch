@@ -29,7 +29,7 @@ export class AdminController {
   @UseGuards(JwtAuthGuard)
   @Delete('edition/:id')
   async deleteEdition(@Param('id') id: string, @Res() res: Response): Promise<Response> {
-    await this.adminService.deleteEdition(id);
+    await this.adminService.deleteEditionById(id);
     return res.sendStatus(HttpStatus.OK);
   }
 }

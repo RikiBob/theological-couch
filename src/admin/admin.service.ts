@@ -88,7 +88,7 @@ export class AdminService {
     return edition;
   }
 
-  async deleteEdition(id: string): Promise<void> {
+  async deleteEditionById(id: string): Promise<void> {
     try {
       const edition = await this.checkEditionById(+id);
       await this.editionRepository.delete(edition.id);
