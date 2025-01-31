@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TelegramService } from './telegram.service';
-import { TelegramController } from './telegram.controller';
 import { QuestionService } from '../question/question.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { QuestionEntity } from '../entities/question.entity';
@@ -24,7 +23,7 @@ dotenv.config();
       }),
     }),
   ],
-  controllers: [TelegramController],
+  controllers: [],
   providers: [TelegramService, QuestionService, CustomLoggerService],
   exports: [TelegramService],
 })

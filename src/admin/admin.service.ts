@@ -1,12 +1,10 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EditionEntity } from '../entities/edition.entity';
 import { Repository } from 'typeorm';
 import { CreateEditionDto } from './dtoes/create-edition.dto';
 import { QuestionEntity } from '../entities/question.entity';
 import * as dotenv from 'dotenv';
-import { IEmailService } from '../email/email.interface';
-import { EMAIL_SERVICE } from '../email/emaile.contacts';
 import { TelegramService } from '../telegram/telegram.service';
 import { CreateAnswerDto } from './dtoes/create-answer.dto';
 
@@ -19,8 +17,6 @@ export class AdminService {
     private readonly editionRepository: Repository<EditionEntity>,
     @InjectRepository(QuestionEntity)
     private readonly questionRepository: Repository<QuestionEntity>,
-    @Inject(EMAIL_SERVICE)
-    private readonly emailService: IEmailService,
     private readonly telegramService: TelegramService,
   ) {}
 
