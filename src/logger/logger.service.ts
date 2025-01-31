@@ -14,18 +14,12 @@ export class CustomLoggerService implements LoggerService {
 
     this.logger = createLogger({
       level: 'info',
-      format: format.combine(
-        format.timestamp(),
-        format.json(),
-      ),
+      format: format.combine(format.timestamp(), format.json()),
       transports: [
-        // new transports.Console({
-        //   format: format.combine(
-        //     format.colorize(),
-        //     format.simple(),
-        //   ),
-        // }),
-        logtailTransport,
+        new transports.Console({
+          format: format.combine(format.colorize(), format.simple()),
+        }),
+        // logtailTransport,
       ],
     });
   }
@@ -50,3 +44,5 @@ export class CustomLoggerService implements LoggerService {
     this.logger.verbose(message, { context });
   }
 }
+
+

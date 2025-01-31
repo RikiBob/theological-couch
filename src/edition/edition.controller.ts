@@ -1,6 +1,5 @@
 import { Controller, Get, Query } from "@nestjs/common";
 import { EditionService } from './edition.service';
-import { QuestionEntity } from "../entities/question.entity";
 import { EditionEntity } from "../entities/edition.entity";
 
 @Controller()

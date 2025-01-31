@@ -1,10 +1,10 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import * as dotenv from 'dotenv';
-import { SendEmailDto } from "./dtoes/send-email.dto";
-import { EmailResponseDto } from "./dtoes/email-response.dto";
+import { SendEmailDto } from './dtoes/send-email.dto';
+import { EmailResponseDto } from './dtoes/email-response.dto';
 import { Transporter } from 'nodemailer';
-import { IEmailService } from "./email.interface";
+import { IEmailService } from './email.interface';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 
@@ -26,9 +26,18 @@ export class EmailService implements IEmailService {
     });
   }
 
-  private async loadTemplate(filePath: string, replacements: { [key: string]: string }): Promise<string> {
+  private async loadTemplate(
+    filePath: string,
+    replacements: { [key: string]: string },
+  ): Promise<string> {
     try {
-      const fullPath = path.join(process.cwd(), 'src', 'email', 'templates', filePath);
+      const fullPath = path.join(
+        process.cwd(),
+        'src',
+        'email',
+        'templates',
+        filePath,
+      );
       let template = await fs.readFile(fullPath, 'utf8');
 
       for (const key in replacements) {
@@ -41,7 +50,12 @@ export class EmailService implements IEmailService {
     }
   }
 
-  async sendEmail({ to, subject, text, replacements }: SendEmailDto): Promise<EmailResponseDto> {
+  async sendEmail({
+    to,
+    subject,
+    text,
+    replacements,
+  }: SendEmailDto): Promise<EmailResponseDto> {
     try {
       const html = await this.loadTemplate('email-template.html', replacements);
       const mailOptions = {
@@ -58,7 +72,9 @@ export class EmailService implements IEmailService {
         response: info.response,
       };
     } catch (error) {
-      throw new InternalServerErrorException('Failed to send email. Please try again later.');
+      throw new InternalServerErrorException(
+        'Failed to send email. Please try again later.',
+      );
     }
   }
 }
