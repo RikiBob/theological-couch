@@ -23,6 +23,7 @@ export class AdminService {
   async createEdition(data: CreateEditionDto): Promise<EditionEntity> {
     try {
       const edition = this.editionRepository.create(data);
+
       return await this.editionRepository.save(edition);
     } catch (error) {
       throw new BadRequestException(error.message);
@@ -41,7 +42,6 @@ export class AdminService {
 
   private async checkEditionByUrl(url: string): Promise<EditionEntity> {
     const edition = await this.editionRepository.findOneBy({ url_video: url });
-
     if (!edition) {
       throw new BadRequestException('Video not found.');
     }
@@ -51,6 +51,7 @@ export class AdminService {
 
   async createAnswer(data: CreateAnswerDto, questionId: number): Promise<void> {
     try {
+      console.log(data.url);
       const { url, question_summary } = data;
       const question = await this.checkQuestionById(questionId);
       const parseUrl = url.split('&t=')[0];

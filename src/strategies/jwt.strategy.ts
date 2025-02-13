@@ -1,11 +1,11 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import * as dotenv from 'dotenv';
-import { InjectRepository } from "@nestjs/typeorm";
-import { AdminEntity } from "../entities/admin.entity";
-import { Repository } from "typeorm";
+import { InjectRepository } from '@nestjs/typeorm';
+import { AdminEntity } from '../entities/admin.entity';
+import { Repository } from 'typeorm';
 
 dotenv.config();
 
@@ -31,7 +31,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: JwtPayload): Promise<{ admin: AdminEntity }> {
-    const foundUser = await this.adminRepository.findOneBy({login: payload.login});
+    const foundUser = await this.adminRepository.findOneBy({
+      login: payload.login,
+    });
     if (!foundUser) {
       throw new UnauthorizedException();
     }

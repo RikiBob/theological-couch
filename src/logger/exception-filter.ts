@@ -1,5 +1,10 @@
-import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter } from "@nestjs/common";
-import { CustomLoggerService } from "./logger.service";
+import {
+  ArgumentsHost,
+  BadRequestException,
+  Catch,
+  ExceptionFilter,
+} from '@nestjs/common';
+import { CustomLoggerService } from './logger.service';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -37,7 +42,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     response.status(status).json({
       statusCode: status,
-      message: exception instanceof Error ? exception.message : 'Internal server error',
+      message:
+        exception instanceof Error
+          ? exception.message
+          : 'Internal server error',
     });
   }
 }

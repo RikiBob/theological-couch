@@ -44,5 +44,3 @@ export class CustomLoggerService implements LoggerService {
     this.logger.verbose(message, { context });
   }
 }
-
-

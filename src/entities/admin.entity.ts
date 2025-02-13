@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
 @Entity('admin')
@@ -6,10 +6,10 @@ export class AdminEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({length: 255})
+  @Column({ length: 255 })
   login: string;
 
-  @Column({length: 100})
+  @Column({ length: 100 })
   password: string;
 
   @BeforeInsert()

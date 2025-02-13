@@ -30,7 +30,7 @@ export class AdminController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch('question/:id')
+  @Patch('answer/:id')
   async createAnswer(
     @Body() data: CreateAnswerDto,
     @Param('id') id: string,

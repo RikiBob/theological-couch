@@ -1,14 +1,15 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
-import { EditionEntity } from "../entities/edition.entity";
-import { Repository } from "typeorm";
-import { InjectRepository } from "@nestjs/typeorm";
-import { GetEditionsDto } from "./dtoes/get-editions.dto";
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { EditionEntity } from '../entities/edition.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { GetEditionsDto } from './dtoes/get-editions.dto';
 
 @Injectable()
 export class EditionService {
   constructor(
     @InjectRepository(EditionEntity)
-    private readonly editionRepository: Repository<EditionEntity>) {}
+    private readonly editionRepository: Repository<EditionEntity>,
+  ) {}
 
   async getEditions(data: GetEditionsDto): Promise<EditionEntity[]> {
     try {
