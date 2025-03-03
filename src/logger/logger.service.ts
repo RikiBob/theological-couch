@@ -16,10 +16,10 @@ export class CustomLoggerService implements LoggerService {
       level: 'info',
       format: format.combine(format.timestamp(), format.json()),
       transports: [
-        new transports.Console({
-          format: format.combine(format.colorize(), format.simple()),
-        }),
-        // logtailTransport,
+        // new transports.Console({
+        //   format: format.combine(format.colorize(), format.simple()),
+        // }),
+        logtailTransport,
       ],
     });
   }
