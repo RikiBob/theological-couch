@@ -3,8 +3,9 @@ import {
   BadRequestException,
   Catch,
   ExceptionFilter,
+  HttpException,
 } from '@nestjs/common';
-import { CustomLoggerService } from './logger.service';
+import { CustomLoggerService } from '../logger/logger.service';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -14,7 +15,18 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest();
     const response = ctx.getResponse();
-    const status = exception instanceof Error ? 500 : 400;
+
+    let status = 500;
+    let message = 'Internal server error';
+
+    if (exception instanceof HttpException) {
+      status = exception.getStatus();
+      const responseBody = exception.getResponse();
+      message =
+        typeof responseBody === 'string'
+          ? responseBody
+          : (responseBody as any).message || message;
+    }
 
     if (exception instanceof BadRequestException) {
       const responseBody = exception.getResponse();
@@ -36,16 +48,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
     }
 
     this.logger.error(
-      `Error in ${request.method} ${request.originalUrl} - ${exception instanceof Error ? exception.message : 'Unknown error'}`,
+      `Error in ${request.method} ${request.originalUrl} - ${message}`,
       exception instanceof Error ? exception.stack : '',
     );
 
     response.status(status).json({
       statusCode: status,
-      message:
-        exception instanceof Error
-          ? exception.message
-          : 'Internal server error',
+      message,
     });
   }
 }

@@ -17,6 +17,9 @@ export class QuestionEntity {
   @Column({ length: 255, nullable: true })
   email: string;
 
+  @Column({ type: 'bigint', nullable: true })
+  telegram_id: string;
+
   @Column({ length: 2000 })
   question_text: string;
 

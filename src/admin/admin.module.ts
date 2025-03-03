@@ -8,6 +8,7 @@ import { TelegramService } from '../telegram/telegram.service';
 import { QuestionService } from '../question/question.service';
 import { CacheModule } from '@nestjs/cache-manager';
 import { CustomLoggerService } from '../logger/logger.service';
+import { EmailService } from '../email/email.service';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CustomLoggerService } from '../logger/logger.service';
     TelegramService,
     QuestionService,
     CustomLoggerService,
+    EmailService,
   ],
 })
 export class AdminModule {}

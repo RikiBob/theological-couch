@@ -5,11 +5,12 @@ import {
   Post,
   Req,
   Res,
-  UnauthorizedException,
+  UnauthorizedException, UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response, Request } from 'express';
 import { LoginAdminDto } from './dtoes/login-admin.dto';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -59,9 +60,11 @@ export class AuthController {
     return res.json(newTokens);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('logout')
   async logout(@Res() res: Response, @Req() req): Promise<Response> {
-    const adminId = req.user?.id; // Отримуємо ID адміністратора з токена
+    const adminId = req.user?.admin?.id;
+
     if (!adminId) {
       throw new UnauthorizedException('Admin ID not found');
     }

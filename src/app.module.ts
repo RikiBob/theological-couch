@@ -32,7 +32,7 @@ dotenv.config();
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       entities: [AdminEntity, EditionEntity, QuestionEntity],
-      synchronize: true,
+      synchronize: false,
     }),
     TypeOrmModule.forFeature([AdminEntity]),
     AuthModule,

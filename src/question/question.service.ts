@@ -42,6 +42,7 @@ export class QuestionService {
       }
 
       const [questions] = await queryBuilder.getManyAndCount();
+
       return questions;
     } catch (error) {
       throw new BadRequestException(error.message);

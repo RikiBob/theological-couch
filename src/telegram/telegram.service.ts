@@ -303,7 +303,7 @@ export class TelegramService {
         const text = ctx.message.text;
 
         await this.questionService.createQuestion({
-          email: userId,
+          telegram_id: userId,
           question_text: text,
         });
 

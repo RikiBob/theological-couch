@@ -1,6 +1,7 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsUrl } from 'class-validator';
 
 export class CreateEditionDto {
+  @IsUrl()
   @IsNotEmpty()
   url_video: string;
   @IsNotEmpty()

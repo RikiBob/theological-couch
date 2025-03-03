@@ -7,6 +7,7 @@ import { QuestionEntity } from '../entities/question.entity';
 import * as dotenv from 'dotenv';
 import { TelegramService } from '../telegram/telegram.service';
 import { CreateAnswerDto } from './dtoes/create-answer.dto';
+import { EmailService } from '../email/email.service';
 
 dotenv.config();
 
@@ -18,10 +19,12 @@ export class AdminService {
     @InjectRepository(QuestionEntity)
     private readonly questionRepository: Repository<QuestionEntity>,
     private readonly telegramService: TelegramService,
+    private readonly emailService: EmailService,
   ) {}
 
   async createEdition(data: CreateEditionDto): Promise<EditionEntity> {
     try {
+      data.url_video = data.url_video.split('&t=')[0];
       const edition = this.editionRepository.create(data);
 
       return await this.editionRepository.save(edition);
@@ -51,7 +54,6 @@ export class AdminService {
 
   async createAnswer(data: CreateAnswerDto, questionId: number): Promise<void> {
     try {
-      console.log(data.url);
       const { url, question_summary } = data;
       const question = await this.checkQuestionById(questionId);
       const parseUrl = url.split('&t=')[0];
@@ -71,7 +73,22 @@ export class AdminService {
         question_text: question.question_text,
       };
 
-      await this.telegramService.sendMessage(question.email, replacements);
+      if (!question.email && !question.telegram_id) {
+        return;
+      }
+
+      if (question.telegram_id) {
+        await this.telegramService.sendMessage(
+          question.telegram_id,
+          replacements,
+        );
+      } else {
+        await this.emailService.sendEmail({
+          to: question.email,
+          subject: 'Відповідь на питання',
+          replacements,
+        });
+      }
     } catch (error) {
       throw new BadRequestException(error.message);
     }
