@@ -4,7 +4,7 @@ import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminEntity } from '../entities/admin.entity';
 import { CacheModule } from '@nestjs/cache-manager';
-import * as redisStore from 'cache-manager-ioredis';
+import { redisStore } from 'cache-manager-ioredis-yet';
 import * as dotenv from 'dotenv';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { JwtStrategy } from '../strategies/jwt.strategy';
@@ -21,7 +21,10 @@ dotenv.config();
         ttl: 0,
         store: redisStore,
         host: process.env.REDIS_HOST,
-        port: process.env.REDIS_PORT,
+        port: +process.env.REDIS_PORT,
+        username: 'default',
+        password: process.env.REDIS_PASSWORD,
+        tls: {},
       }),
     }),
   ],
