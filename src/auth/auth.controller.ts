@@ -5,7 +5,8 @@ import {
   Post,
   Req,
   Res,
-  UnauthorizedException, UseGuards,
+  UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response, Request } from 'express';
@@ -69,8 +70,19 @@ export class AuthController {
       throw new UnauthorizedException('Admin ID not found');
     }
     await this.authService.logout(adminId);
-    res.clearCookie('access_token');
-    res.clearCookie('refresh_token');
+
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+    });
+
+    res.clearCookie('refresh_token', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+    });
+
     return res.sendStatus(HttpStatus.OK);
   }
 }
