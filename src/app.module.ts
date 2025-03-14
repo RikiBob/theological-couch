@@ -19,6 +19,7 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { EditionModule } from './edition/edition.module';
 import { TelegramModule } from './telegram/telegram.module';
 import { TelegramService } from './telegram/telegram.service';
+import { HealthController } from './helper/health.controller';
 
 dotenv.config();
 
@@ -33,7 +34,7 @@ dotenv.config();
       database: process.env.DB_NAME,
       entities: [AdminEntity, EditionEntity, QuestionEntity],
       ssl: { rejectUnauthorized: false },
-      synchronize: true,
+      synchronize: false,
     }),
     TypeOrmModule.forFeature([AdminEntity]),
     AuthModule,
@@ -43,7 +44,7 @@ dotenv.config();
     EditionModule,
     TelegramModule,
   ],
-  controllers: [],
+  controllers: [HealthController],
   providers: [],
 })
 export class AppModule implements OnModuleInit, NestModule {
