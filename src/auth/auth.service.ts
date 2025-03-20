@@ -13,6 +13,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as dotenv from 'dotenv';
 import { JwtPayload } from '../strategies/jwt.strategy';
 import { LoginAdminDto } from './dtoes/login-admin.dto';
+import { CustomLoggerService } from '../logger/logger.service';
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ export class AuthService {
     private readonly adminRepository: Repository<AdminEntity>,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+    private readonly logger: CustomLoggerService,
   ) {}
 
   private async generateJwt(
@@ -44,7 +46,7 @@ export class AuthService {
       await this.cacheManager.set(
         `refresh_token_${payload.sub}`,
         tokenPair.refreshToken,
-        2592000,
+        2592000000,
       );
 
       return tokenPair;
@@ -110,6 +112,10 @@ export class AuthService {
       const storedToken = await this.cacheManager.get(
         `refresh_token_${admin.id}`,
       );
+
+      this.logger.log(`${storedToken}+++clientToken`, 'clientToken');
+      this.logger.log(`${storedToken}+++storedToken`, 'storedToken');
+
 
       if (storedToken !== refreshToken) {
         throw new UnauthorizedException('Invalid refresh token');

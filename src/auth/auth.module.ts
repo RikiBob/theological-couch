@@ -9,6 +9,7 @@ import * as dotenv from 'dotenv';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { JwtStrategy } from '../strategies/jwt.strategy';
 import { JwtService } from '@nestjs/jwt';
+import { CustomLoggerService } from '../logger/logger.service';
 
 dotenv.config();
 
@@ -29,6 +30,6 @@ dotenv.config();
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtAuthGuard, JwtStrategy, JwtService],
+  providers: [AuthService, JwtAuthGuard, JwtStrategy, JwtService, CustomLoggerService],
 })
 export class AuthModule {}
