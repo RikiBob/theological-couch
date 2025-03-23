@@ -1,14 +1,11 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
-import * as dotenv from 'dotenv';
 import { SendEmailDto } from './dtoes/send-email.dto';
 import { EmailResponseDto } from './dtoes/email-response.dto';
 import { Transporter } from 'nodemailer';
 import { IEmailService } from './email.interface';
 import { promises as fs } from 'fs';
 import * as path from 'path';
-
-dotenv.config();
 
 @Injectable()
 export class EmailService implements IEmailService {

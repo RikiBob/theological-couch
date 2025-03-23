@@ -1,9 +1,6 @@
 import { Injectable, LoggerService } from '@nestjs/common';
-import { createLogger, format, transports, Logger } from 'winston';
+import { createLogger, format, Logger } from 'winston';
 import { LogtailTransport } from './logtail-transport';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
 
 @Injectable()
 export class CustomLoggerService implements LoggerService {

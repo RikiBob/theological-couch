@@ -5,10 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { QuestionEntity } from '../entities/question.entity';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-ioredis-yet';
-import * as dotenv from 'dotenv';
 import { CustomLoggerService } from '../logger/logger.service';
-
-dotenv.config();
 
 @Module({
   imports: [

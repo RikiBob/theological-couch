@@ -21,8 +21,6 @@ import { TelegramModule } from './telegram/telegram.module';
 import { TelegramService } from './telegram/telegram.service';
 import { HealthController } from './helper/health.controller';
 
-dotenv.config();
-
 @Module({
   imports: [
     TypeOrmModule.forRoot({

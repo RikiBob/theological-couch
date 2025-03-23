@@ -10,11 +10,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { JwtService } from '@nestjs/jwt';
-import * as dotenv from 'dotenv';
 import { JwtPayload } from '../strategies/jwt.strategy';
 import { LoginAdminDto } from './dtoes/login-admin.dto';
-
-dotenv.config();
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -28,6 +26,7 @@ export class AuthService {
 
   private async generateJwt(
     payload: JwtPayload,
+    req: Request,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     try {
       const tokenPair = {
@@ -42,9 +41,9 @@ export class AuthService {
       };
 
       await this.cacheManager.set(
-        `refresh_token_${payload.sub}`,
+        `refresh_token_${payload.sub}_${req.headers['user-agent']}`,
         tokenPair.refreshToken,
-        2592000,
+        2592000000,
       );
 
       return tokenPair;
@@ -80,21 +79,25 @@ export class AuthService {
 
   async signIn(
     data: LoginAdminDto,
+    req: Request,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     try {
       const existingAdmin = await this.checkAdminExists(data.login);
       await this.isPasswordValid(data.password, existingAdmin);
 
-      return this.generateJwt({
-        sub: existingAdmin.id,
-        login: existingAdmin.login,
-      });
+      return this.generateJwt(
+        {
+          sub: existingAdmin.id,
+          login: existingAdmin.login,
+        },
+        req,
+      );
     } catch (error) {
       throw new BadRequestException(error.message);
     }
   }
 
-  async refreshTokens(refreshToken: string) {
+  async refreshTokens(refreshToken: string, req: Request) {
     try {
       const payload = this.jwtService.verify(refreshToken, {
         secret: process.env.JWT_SECRET,
@@ -108,7 +111,7 @@ export class AuthService {
       }
 
       const storedToken = await this.cacheManager.get(
-        `refresh_token_${admin.id}`,
+        `refresh_token_${admin.id}_${req.headers['user-agent']}`,
       );
 
       if (storedToken !== refreshToken) {
@@ -129,9 +132,11 @@ export class AuthService {
     }
   }
 
-  async logout(adminId: number): Promise<void> {
+  async logout(adminId: number, req: Request): Promise<void> {
     try {
-      await this.cacheManager.del(`refresh_token_${adminId}`);
+      await this.cacheManager.del(
+        `refresh_token_${adminId}_${req.headers['user-agent']}`,
+      );
     } catch (error) {
       throw new BadRequestException(error.message);
     }

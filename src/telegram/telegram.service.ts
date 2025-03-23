@@ -3,7 +3,6 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import * as dotenv from 'dotenv';
 import { Bot, GrammyError, HttpError, Keyboard } from 'grammy';
 import { promises as fs } from 'fs';
 import * as path from 'path';
@@ -12,8 +11,6 @@ import { QuestionEntity } from '../entities/question.entity';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CustomLoggerService } from '../logger/logger.service';
-
-dotenv.config();
 
 @Injectable()
 export class TelegramService {

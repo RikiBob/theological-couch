@@ -20,9 +20,13 @@ export class AuthController {
   @Post('login')
   async login(
     @Body() data: LoginAdminDto,
+    @Req() req: Request,
     @Res() res: Response,
   ): Promise<Response> {
-    const { accessToken, refreshToken } = await this.authService.signIn(data);
+    const { accessToken, refreshToken } = await this.authService.signIn(
+      data,
+      req,
+    );
 
     res.cookie('access_token', accessToken, {
       httpOnly: true,
@@ -49,7 +53,7 @@ export class AuthController {
       throw new UnauthorizedException('Refresh token is missing');
     }
 
-    const newTokens = await this.authService.refreshTokens(refreshToken);
+    const newTokens = await this.authService.refreshTokens(refreshToken, req);
 
     res.cookie('access_token', newTokens.accessToken, {
       httpOnly: true,
@@ -58,7 +62,7 @@ export class AuthController {
       secure: true,
     });
 
-    return res.json(newTokens);
+    return res.sendStatus(HttpStatus.OK);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -69,7 +73,7 @@ export class AuthController {
     if (!adminId) {
       throw new UnauthorizedException('Admin ID not found');
     }
-    await this.authService.logout(adminId);
+    await this.authService.logout(adminId, req);
 
     res.clearCookie('access_token', {
       httpOnly: true,

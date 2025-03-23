@@ -5,12 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminEntity } from '../entities/admin.entity';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-ioredis-yet';
-import * as dotenv from 'dotenv';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { JwtStrategy } from '../strategies/jwt.strategy';
 import { JwtService } from '@nestjs/jwt';
-
-dotenv.config();
 
 @Module({
   imports: [
