@@ -24,7 +24,7 @@ export class AdminService {
 
   async createEdition(data: CreateEditionDto): Promise<EditionEntity> {
     try {
-      data.url_video = data.url_video.split('&t=')[0];
+      data.url_video = data.url_video.split('&')[0];
       const edition = this.editionRepository.create(data);
 
       return await this.editionRepository.save(edition);
