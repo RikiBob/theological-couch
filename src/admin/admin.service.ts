@@ -112,4 +112,13 @@ export class AdminService {
       throw new BadRequestException(error.message);
     }
   }
+
+  async deleteQuestionById(id: string): Promise<void> {
+    try {
+      const question = await this.questionRepository.findOneBy({ id: +id });
+      await this.questionRepository.delete(question.id);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
 }
