@@ -59,4 +59,14 @@ export class AdminController {
     await this.adminService.deleteQuestionById(id);
     return res.sendStatus(HttpStatus.OK);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('question/:id')
+  async rollbackAnswerById(
+    @Param('id') id: string,
+    @Res() res: Response,
+  ): Promise<Response> {
+    await this.adminService.rollbackAnswerById(id);
+    return res.sendStatus(HttpStatus.OK);
+  }
 }

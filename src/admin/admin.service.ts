@@ -115,8 +115,22 @@ export class AdminService {
 
   async deleteQuestionById(id: string): Promise<void> {
     try {
-      const question = await this.questionRepository.findOneBy({ id: +id });
+      const question = await this.checkQuestionById(+id);
       await this.questionRepository.delete(question.id);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async rollbackAnswerById(id: string): Promise<void> {
+    try {
+      const question = await this.checkQuestionById(+id);
+      await this.questionRepository.update(
+        { id: question.id },
+        {
+          url_answer: null,
+        },
+      );
     } catch (error) {
       throw new BadRequestException(error.message);
     }
