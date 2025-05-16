@@ -459,4 +459,12 @@ export class TelegramService {
       throw new InternalServerErrorException('Error processing send message.');
     }
   }
+
+  public async sendToTelegramChannel(question: QuestionEntity): Promise<void> {
+    const message = `Питання:\n\n${question.question_text}`;
+    await this.bot.api.sendMessage(
+      process.env.TELEGRAM_QUESTIONS_CHANNEL_ID,
+      message,
+    );
+  }
 }

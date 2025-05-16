@@ -4,12 +4,9 @@ import { EditionEntity } from '../entities/edition.entity';
 import { Repository } from 'typeorm';
 import { CreateEditionDto } from './dtoes/create-edition.dto';
 import { QuestionEntity } from '../entities/question.entity';
-import * as dotenv from 'dotenv';
 import { TelegramService } from '../telegram/telegram.service';
 import { CreateAnswerDto } from './dtoes/create-answer.dto';
 import { EmailService } from '../email/email.service';
-
-dotenv.config();
 
 @Injectable()
 export class AdminService {

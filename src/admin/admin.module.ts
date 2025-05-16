@@ -4,24 +4,21 @@ import { AdminController } from './admin.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EditionEntity } from '../entities/edition.entity';
 import { QuestionEntity } from '../entities/question.entity';
-import { TelegramService } from '../telegram/telegram.service';
-import { QuestionService } from '../question/question.service';
 import { CacheModule } from '@nestjs/cache-manager';
-import { CustomLoggerService } from '../logger/logger.service';
 import { EmailService } from '../email/email.service';
+import { QuestionModule } from '../question/question.module';
+import { LoggerModule } from '../logger/logger.module';
+import { TelegramModule } from '../telegram/telegram.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([EditionEntity, QuestionEntity]),
     CacheModule.register(),
+    TelegramModule,
+    QuestionModule,
+    LoggerModule,
   ],
   controllers: [AdminController],
-  providers: [
-    AdminService,
-    TelegramService,
-    QuestionService,
-    CustomLoggerService,
-    EmailService,
-  ],
+  providers: [AdminService, EmailService],
 })
 export class AdminModule {}

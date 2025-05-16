@@ -1,13 +1,16 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QuestionEntity } from '../entities/question.entity';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { CreateQuestionDto } from './dtoes/create-question.dto';
 import { GetQuestionsDto } from './dtoes/get-questions.dto';
+import { TelegramService } from '../telegram/telegram.service';
 
 @Injectable()
 export class QuestionService {
   constructor(
+    @Inject(forwardRef(() => TelegramService))
+    private readonly telegramService: TelegramService,
     @InjectRepository(QuestionEntity)
     private readonly questionRepository: Repository<QuestionEntity>,
   ) {}
@@ -15,7 +18,9 @@ export class QuestionService {
   async createQuestion(data: CreateQuestionDto): Promise<QuestionEntity> {
     try {
       const question = this.questionRepository.create(data);
-      return await this.questionRepository.save(question);
+      const saved = await this.questionRepository.save(question);
+      await this.telegramService.sendToTelegramChannel(saved);
+      return saved;
     } catch (error) {
       throw new BadRequestException(error.message);
     }

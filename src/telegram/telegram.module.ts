@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TelegramService } from './telegram.service';
 import { QuestionService } from '../question/question.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -6,6 +6,8 @@ import { QuestionEntity } from '../entities/question.entity';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-ioredis-yet';
 import { CustomLoggerService } from '../logger/logger.service';
+import { QuestionModule } from '../question/question.module';
+import { LoggerModule } from '../logger/logger.module';
 
 @Module({
   imports: [
@@ -22,9 +24,11 @@ import { CustomLoggerService } from '../logger/logger.service';
         tls: {},
       }),
     }),
+    forwardRef(() => QuestionModule),
+    LoggerModule,
   ],
   controllers: [],
-  providers: [TelegramService, QuestionService, CustomLoggerService],
+  providers: [TelegramService],
   exports: [TelegramService],
 })
 export class TelegramModule {}

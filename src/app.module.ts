@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import * as dotenv from 'dotenv';
 import { AdminEntity } from './entities/admin.entity';
 import { EditionEntity } from './entities/edition.entity';
 import { QuestionEntity } from './entities/question.entity';
@@ -20,6 +19,9 @@ import { EditionModule } from './edition/edition.module';
 import { TelegramModule } from './telegram/telegram.module';
 import { TelegramService } from './telegram/telegram.service';
 import { HealthController } from './helper/health.controller';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Module({
   imports: [
