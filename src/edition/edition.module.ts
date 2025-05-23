@@ -8,5 +8,6 @@ import { EditionEntity } from '../entities/edition.entity';
   imports: [TypeOrmModule.forFeature([EditionEntity])],
   controllers: [EditionController],
   providers: [EditionService],
+  exports: [EditionService],
 })
 export class EditionModule {}

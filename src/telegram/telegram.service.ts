@@ -1,4 +1,5 @@
 import {
+  forwardRef,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -17,6 +18,7 @@ export class TelegramService {
   private readonly bot;
 
   constructor(
+    @Inject(forwardRef(() => QuestionService))
     private readonly questionService: QuestionService,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
