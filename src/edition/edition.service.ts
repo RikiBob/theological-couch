@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { EditionEntity } from '../entities/edition.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GetEditionsDto } from './dtoes/get-editions.dto';
+import { PaginateEditionsDto } from './dtoes/paginate-editions.dto';
 
 @Injectable()
 export class EditionService {
@@ -11,9 +11,9 @@ export class EditionService {
     private readonly editionRepository: Repository<EditionEntity>,
   ) {}
 
-  async getEditions(data: GetEditionsDto): Promise<EditionEntity[]> {
+  async getEditions(data: PaginateEditionsDto): Promise<EditionEntity[]> {
     try {
-      const pageNumber = +data.page || 1;
+      const pageNumber = data.page || 1;
       const sortField = data.sortBy || 'created_at';
       const sortDirection = data.sortOrder || 'DESC';
       const take = 25;

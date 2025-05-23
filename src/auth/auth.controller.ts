@@ -12,12 +12,34 @@ import { AuthService } from './auth.service';
 import { Response, Request } from 'express';
 import { LoginAdminDto } from './dtoes/login-admin.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiCookieAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
+  @ApiOperation({
+    summary: 'Sing in',
+    description: 'Starting a session and setting access and refresh tokens',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Admin successfully logged in',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Validation failed',
+  })
+  @ApiBody({ type: LoginAdminDto })
   async login(
     @Body() data: LoginAdminDto,
     @Req() req: Request,
@@ -46,6 +68,16 @@ export class AuthController {
   }
 
   @Post('refresh')
+  @ApiOperation({
+    summary: 'Access token renewal',
+    description: 'Updates access token via refresh token passed in cookies',
+  })
+  @ApiCookieAuth()
+  @ApiResponse({ status: HttpStatus.OK, description: 'Refresh token renewal' })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Refresh token missing or invalid',
+  })
   async refresh(@Req() req: Request, @Res() res: Response) {
     const refreshToken = req.cookies?.refresh_token;
 
@@ -67,6 +99,20 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('logout')
+  @ApiOperation({
+    summary: 'Sign out',
+    description:
+      'Clears access token and refresh token from cookies and ends the session',
+  })
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Successfully logged out',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'No access or user is not authorized',
+  })
   async logout(@Res() res: Response, @Req() req): Promise<Response> {
     const adminId = req.user?.admin?.id;
 

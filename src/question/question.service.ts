@@ -1,9 +1,14 @@
-import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QuestionEntity } from '../entities/question.entity';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { CreateQuestionDto } from './dtoes/create-question.dto';
-import { GetQuestionsDto } from './dtoes/get-questions.dto';
+import { PaginateQuestionsDto } from './dtoes/paginate-questions.dto';
 import { TelegramService } from '../telegram/telegram.service';
 
 @Injectable()
@@ -27,7 +32,7 @@ export class QuestionService {
   }
 
   private async getQuestionsWithFilter(
-    data?: GetQuestionsDto,
+    data?: PaginateQuestionsDto,
     filter?: (queryBuilder: SelectQueryBuilder<QuestionEntity>) => void,
   ): Promise<QuestionEntity[]> {
     try {
@@ -54,19 +59,21 @@ export class QuestionService {
     }
   }
 
-  async getQuestions(data: GetQuestionsDto): Promise<QuestionEntity[]> {
+  async getQuestions(data: PaginateQuestionsDto): Promise<QuestionEntity[]> {
     return this.getQuestionsWithFilter(data);
   }
 
   async getUnansweredQuestions(
-    data: GetQuestionsDto,
+    data: PaginateQuestionsDto,
   ): Promise<QuestionEntity[]> {
     return this.getQuestionsWithFilter(data, (queryBuilder) => {
       queryBuilder.where('question.url_answer IS NULL');
     });
   }
 
-  async getAnsweredQuestions(data: GetQuestionsDto): Promise<QuestionEntity[]> {
+  async getAnsweredQuestions(
+    data: PaginateQuestionsDto,
+  ): Promise<QuestionEntity[]> {
     return this.getQuestionsWithFilter(data, (queryBuilder) => {
       queryBuilder.where('question.url_answer IS NOT NULL');
     });

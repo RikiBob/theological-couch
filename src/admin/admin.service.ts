@@ -101,27 +101,27 @@ export class AdminService {
     return edition;
   }
 
-  async deleteEditionById(id: string): Promise<void> {
+  async deleteEditionById(id: number): Promise<void> {
     try {
-      const edition = await this.checkEditionById(+id);
+      const edition = await this.checkEditionById(id);
       await this.editionRepository.delete(edition.id);
     } catch (error) {
       throw new BadRequestException(error.message);
     }
   }
 
-  async deleteQuestionById(id: string): Promise<void> {
+  async deleteQuestionById(id: number): Promise<void> {
     try {
-      const question = await this.checkQuestionById(+id);
+      const question = await this.checkQuestionById(id);
       await this.questionRepository.delete(question.id);
     } catch (error) {
       throw new BadRequestException(error.message);
     }
   }
 
-  async rollbackAnswerById(id: string): Promise<void> {
+  async rollbackAnswerById(id: number): Promise<void> {
     try {
-      const question = await this.checkQuestionById(+id);
+      const question = await this.checkQuestionById(id);
       await this.questionRepository.update(
         { id: question.id },
         {
