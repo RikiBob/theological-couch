@@ -31,7 +31,6 @@ async function bootstrap() {
     .setTitle('Theological Couch API')
     .setDescription('API for the Theological Couch app')
     .setVersion('1.0')
-    .addTag('Admin')
     .addTag('Auth')
     .addTag('Edition')
     .addTag('Question')

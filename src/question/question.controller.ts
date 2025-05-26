@@ -1,9 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
+  Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   Res,
@@ -18,18 +21,20 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiParam,
   ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { GetQuestionDto } from './dtoes/get-question.dto';
+import { CreateAnswerDto } from './dtoes/create-answer.dto';
 
 @ApiTags('Question')
-@Controller()
+@Controller('questions')
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 
-  @Post('question')
+  @Post()
   @ApiOperation({
     summary: 'Add a new question',
     description: 'Creates a new question in the system',
@@ -52,7 +57,7 @@ export class QuestionController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('questions/all')
+  @Get()
   @ApiOperation({
     summary: 'Get all questions',
     description: 'Returns paginated and sorted list of questions',
@@ -99,7 +104,7 @@ export class QuestionController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('questions/unanswered')
+  @Get('unanswered')
   @ApiOperation({
     summary: 'Get unanswered questions',
     description: 'Returns paginated and sorted list of questions',
@@ -146,7 +151,7 @@ export class QuestionController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('questions/answered')
+  @Get('answered')
   @ApiOperation({
     summary: 'Get answered questions',
     description: 'Returns paginated and sorted list of questions',
@@ -190,5 +195,88 @@ export class QuestionController {
       sortBy,
       sortOrder,
     });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('answer/:id')
+  @ApiOperation({
+    summary: 'Add an answer',
+    description: 'Add an answer to the question with the specified ID',
+  })
+  @ApiBearerAuth()
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    description: 'The ID of the question to which the answer is attached',
+    example: 27,
+  })
+  @ApiBody({ type: CreateAnswerDto })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Answer successfully updated',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Validation failed',
+  })
+  async createAnswer(
+    @Body() data: CreateAnswerDto,
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ): Promise<Response> {
+    await this.questionService.createAnswer(data, id);
+    return res.sendStatus(HttpStatus.OK);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('rollback/:id')
+  @ApiOperation({
+    summary: 'Rollback answer from question',
+    description: 'Removes the answer field from a question by its ID',
+  })
+  @ApiBearerAuth()
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    description: 'D of the question from which the answer will be removed',
+    example: 27,
+  })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Successfully deleted' })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Validation failed',
+  })
+  async rollbackAnswerById(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ): Promise<Response> {
+    await this.questionService.rollbackAnswerById(id);
+    return res.sendStatus(HttpStatus.OK);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  @ApiOperation({
+    summary: 'Delete a question',
+    description: 'Deletes a question by its ID',
+  })
+  @ApiBearerAuth()
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    description: 'ID of the question to delete',
+    example: 27,
+  })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Successfully deleted' })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Validation failed',
+  })
+  async deleteQuestion(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ): Promise<Response> {
+    await this.questionService.deleteQuestionById(id);
+    return res.sendStatus(HttpStatus.OK);
   }
 }

@@ -1,9 +1,12 @@
 import {
-  Controller,
+  Body,
+  Controller, Delete,
   Get,
-  HttpStatus,
+  HttpStatus, Param,
   ParseIntPipe,
+  Post,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { EditionService } from './edition.service';
@@ -11,20 +14,47 @@ import { EditionEntity } from '../entities/edition.entity';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import {
   ApiBearerAuth,
-  ApiOperation,
+  ApiBody,
+  ApiOperation, ApiParam,
   ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { GetEditionDto } from './dtoes/get-edition.dto';
+import { CreateEditionDto } from './dtoes/create-edition.dto';
+import { Response } from 'express';
 
 @ApiTags('Edition')
-@Controller()
+@Controller('editions')
 export class EditionController {
   constructor(private readonly editionService: EditionService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get('editions/all')
+  @Post()
+  @ApiOperation({
+    summary: 'Add a new edition',
+    description: 'Creates a new edition in the system',
+  })
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Edition successfully created',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Validation failed',
+  })
+  @ApiBody({ type: CreateEditionDto })
+  async createEdition(
+    @Body() data: CreateEditionDto,
+    @Res() res: Response,
+  ): Promise<Response> {
+    await this.editionService.createEdition(data);
+    return res.sendStatus(HttpStatus.OK);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get()
   @ApiOperation({
     summary: 'Get all editions',
     description: 'Returns paginated and sorted list of editions',
@@ -68,5 +98,31 @@ export class EditionController {
       sortBy,
       sortOrder,
     });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  @ApiOperation({
+    summary: 'Delete an edition',
+    description: 'Deletes an edition by its ID',
+  })
+  @ApiBearerAuth()
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    description: 'ID of the edition to delete',
+    example: 27,
+  })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Successfully deleted' })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Validation failed',
+  })
+  async deleteEdition(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ): Promise<Response> {
+    await this.editionService.deleteEditionById(id);
+    return res.sendStatus(HttpStatus.OK);
   }
 }
